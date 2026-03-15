@@ -1,4 +1,4 @@
-import csv
+import pandas as pd
 import os
 
 
@@ -35,6 +35,8 @@ def main():
                 "grade": grade
                 }
                 students.append(student_data)
+                df = pd.DataFrame(students)
+                df.to_csv('student_grade_records.csv', index = False)
 
                 print(f"Data for the student {name1} saved successfully!")
 
@@ -43,32 +45,27 @@ def main():
 
         elif choice == '2':
             filename = "student_grade_records.csv"
-            fields = ['ID', 'Name', 'Subject', 'Grade']
 
             if not students:
                 print("\nNo data stored yet. Please add a student record first.")
             else:
                 try:
-                    with open(filename, mode = 'w', newline='') as file:
-                        writer = csv.writer(file)
-                        writer.writerow(fields)
-                        print("\n--- Current Grade Report ---")
+                    df = pd.DataFrame(students)
+                        
+                    df.to_csv(filename, index = False)
+                    print(f"Sucessfully saved the record to {filename}")
+                    print("\n---Current Grade Report ---")
 
-                        all_grades = []
-                        for s in students:
-                            print(f"Student: {s['name']}  | Subject: {s['subject']}  | Grade: {s['grade']}")
+                    print(df.to_string(index=False))
 
-                            writer.writerow([s.get('id', 'N/A'), s['name'], s['subject'], s['grade']])
-            
-                        all_grades.append(s['grade'])
+                    avg = df['grade'].mean() # Optional but will make things much faster
+                    print("-" * 30)
+                    print(f"Total Students: {len(df)}")
+                    print(f"Overall Class Average: {avg:.2f}")
+                    print("-" * 30)
 
-                        avg = calculate_average(all_grades)
-                        print(f"\nTotal Students: {len(students)}")
-                        print(f"Overall Class Average: {avg:.2f}")
-
-                    print(f"\nSucessfully saved the record to {filename}")
                 except Exception as e:
-                    print(f"Error in trying to save the record in CSV: {e}")
+                    print(f"Error in trying to save or display records: {e}")
         
         elif choice == '3':
             print("Exiting Program.....\nGoodBye!")
